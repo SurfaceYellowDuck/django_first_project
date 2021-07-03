@@ -25,10 +25,11 @@ urlpatterns = [
     path('', index, name="index"),
     path('contacts/', contacts, name="contacts"),
     path('products/', include('mainapp.urls', namespace='products')),
-    path('test/', include('mainapp.urls', namespace='test'))
+    path('auth/', include('authapp.urls', namespace='auth')),
+    path('test/', include('mainapp.urls', namespace='test')),
 ]
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 

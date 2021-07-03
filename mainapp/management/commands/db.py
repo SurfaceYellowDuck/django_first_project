@@ -1,32 +1,34 @@
 from django.core.management.base import BaseCommand
 import json
 import os
-from pathlib import Path
 from mainapp.models import Product, ProductCategory
-import re
+from django.contrib.auth.models import User
+from authapp.models import ShopUser
+
+JSON_PATH = 'mainapp/jsons'
 
 
-def read_json(way_to_file):
-    with open(way_to_file) as tables:
-        chairs_json = json.load(tables)
-    # print(chairs_json)
-    chairs_list = []
-    for section, commands in chairs_json.items():
-        chairs_list = commands
-    print(chairs_list)
-    return chairs_list
-read_json(r'C:\Learning_Django\learn_django_beginner\lesson2\geekshop\tables.json')
+def load_from_json(file_name):
+    with open(os.path.join(JSON_PATH, file_name + '.json'), 'r', encoding='utf-8') as infile:
+        return json.load(infile)
 
 
+class Command(BaseCommand):
+    def handle(self, *args, **options):
+        categories = load_from_json('categories')
 
+        ProductCategory.objects.all().delete()
+        for category in categories:
+            new_category = ProductCategory(**category)
+            new_category.save()
 
-# def fill_db():
-#     json_massive = read_json(r'tables.json')
-#     for el in json_massive:
-#         search_element = re.search(r'стул', el)
-#         if ProductCategory.objects.get('Классика'):
-#             new_product = Product.objects.name(name=el, category=ProductCategory.objects.get('Классика'))
-#             new_product.save()
-# print(project_dir)
-# read_json('tables.json')
-# read_json(r'C:\Learning_Django\learn_django_beginner\lesson2\geekshop\tables.json')
+        products = load_from_json('products')
+
+        Product.objects.all().delete()
+        for product in products:
+            category_name = product["category"]
+            _category = ProductCategory.objects.get(name=category_name)
+            product['category'] = _category
+            new_product = Product(**product)
+            new_product.save()
+        super_user = ShopUser.objects.create_superuser('shatun1', 'django@geekshop.local', '123', age=22)
