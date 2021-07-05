@@ -1,5 +1,8 @@
 from django.shortcuts import render
 import json
+
+from basketapp.models import Basket
+
 page_header = [
         {'page_name': 'contacts', 'header': 'НАШИ КОНТАКТЫ'},
         {'page_name': 'index', 'header': 'УДОБНЫЕ СТУЛЬЯ'},
@@ -18,18 +21,24 @@ def read_json(way_to_file):
 
 
 def index(request):
+    if request.user.is_authenticated:
+        basket = Basket.objects.filter(user=request.user)
     title = 'магазин'
     tables = read_json(r'C:\Learning_Django\django_first_project\tables.json')
     context = {
         'title': title,
         'page_header': page_header,
         'tables': tables,
+        'basket': basket
     }
     return render(request, 'geekshop/index.html', context=context)
 
 
 def contacts(request):
+    if request.user.is_authenticated:
+        basket = Basket.objects.filter(user=request.user)
     context = {
-        'page_header': page_header
+        'page_header': page_header,
+        'basket': basket
     }
     return render(request, 'geekshop/contact.html', context=context)

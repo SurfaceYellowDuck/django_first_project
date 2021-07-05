@@ -65,7 +65,7 @@ class ShopUserEditForm(UserChangeForm):
     def clean_avatar(self):
         data = self.cleaned_data['avatar']
         width, height = get_image_dimensions(data)
-        if width != 200:
+        if width > 300:
             raise forms.ValidationError("Фотография слишком широкая")
-        if height != 300:
+        if height > 200:
             raise forms.ValidationError("Фотография слишком высокая")

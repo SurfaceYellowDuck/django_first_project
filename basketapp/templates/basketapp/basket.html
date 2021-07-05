@@ -1,0 +1,31 @@
+{% extends 'geekshop/base.html' %}
+{% load static %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="container">
+            <div class="row">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Продукт</th>
+                  <th scope="col">Количество</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for item in basket %}
+                  <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ item.product }}</td>
+                      <td>{{ item.quantity }}</td>
+                  </tr>
+              {% endfor %}
+            <p>Стоимость корзины: {{ price }} руб.</p>
+            <p>Всего товаров:  {{ quantity }} штук</p>
+              </tbody>
+            </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
