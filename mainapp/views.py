@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import render, get_object_or_404
 
 from basketapp.models import Basket
@@ -14,6 +16,25 @@ def categorys(request):
         'categorys': categorys,
     }
     return render(request, template_name='mainapp/test.html', context=context)
+
+
+def get_basket(user):
+    if user.is_authenticated:
+        return Basket.objects.filter(user=user)
+    else:
+        return []
+
+
+def get_hot_product():
+    products = Product.objects.all()
+
+    return random.sample(list(products), 1)[0]
+
+
+def get_same_products(hot_product):
+    same_products = Product.objects.filter(category=hot_product.category).exclude(pk=hot_product.pk)
+
+    return same_products
 
 
 def products(request, pk=None):
@@ -40,12 +61,29 @@ def products(request, pk=None):
 
         return render(request=request, template_name='mainapp/products.html', context=context)
 
-    same_products = Product.objects.all()[3:5]
+    hot_product = get_hot_product()
+    same_products = get_same_products(hot_product)
+
     context = {
         'title': title,
         'links_menu': links_menu,
+        'hot_product': hot_product,
         'same_products': same_products,
         'products': products,
         'basket': basket,
     }
+
     return render(request=request, template_name='mainapp/products.html', context=context)
+
+
+def product(request, pk):
+    title = 'продукты'
+
+    context = {
+        'title': title,
+        'links_menu': ProductCategory.objects.all(),
+        'product': get_object_or_404(Product, pk=pk),
+        'basket': get_basket(request.user),
+    }
+
+    return render(request, 'mainapp/product.html', context)

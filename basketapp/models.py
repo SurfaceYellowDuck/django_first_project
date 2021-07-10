@@ -1,25 +1,9 @@
-from django.db import models
-
 # Create your models here.
 from geekshop import settings
 from mainapp.models import Product, ProductCategory
 
 
 from django.db import models
-
-
-def total_price():
-    total_price = 0
-    for el in Product.objects.all():
-        total_price += el.price * el.quantity
-    return total_price
-
-
-def total_quantity():
-    total_quantity = 0
-    for el in Basket.objects.all():
-        total_quantity += el.quantity
-    return total_quantity
 
 
 class Basket(models.Model):
@@ -40,3 +24,19 @@ class Basket(models.Model):
         verbose_name='время',
         auto_now_add=True,
     )
+
+    @property
+    def product_cost(self):
+        return self.product.price * self.quantity
+
+    @property
+    def total_quantity(self):
+        _items = Basket.objects.filter(user=self.user)
+        _total_quantity = sum(list(map(lambda x: x.quantity, _items)))
+        return _total_quantity
+
+    @property
+    def total_cost(self):
+        _items = Basket.objects.filter(user=self.user)
+        _total_cost = sum(list(map(lambda x: x.product_cost, _items)))
+        return _total_cost
