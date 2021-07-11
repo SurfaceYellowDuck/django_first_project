@@ -1,3 +1,4 @@
+
 <table class="table">
   <thead>
     <tr>
@@ -13,9 +14,20 @@
       <tr>
           <th scope="row">{{ forloop.counter }}</th>
           <td>{{ item.product }}</td>
-          <td><input type="number" name="{{ item.pk }}"
+{#          <td>#}
+{#              <div class="_basket">#}
+{#                  <button class="number-minus" type="button" >-</button>#}
+{#	            <input type="number" name="{{ item.pk }}"#}
+{#                min="0"#}
+{#                value="{{ item.quantity }}" >#}
+{#               <button class="number-plus" type="button" >+</button>#}
+{#              </div>#}
+{#          </td>#}
+          <td>
+              <input type="number" name="{{ item.pk }}"
                min="0"
-               value="{{ item.quantity }}"></td>
+               value="{{ item.quantity }}">
+          </td>
           <td>{{ item.product.price }}</td>
           <td>
               <button class="btn btn-round">

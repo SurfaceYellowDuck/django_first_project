@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+import django.contrib.staticfiles.finders
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -126,12 +128,19 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "geekshop", "static"),
 )
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
