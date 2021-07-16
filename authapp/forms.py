@@ -4,7 +4,6 @@ from django.core.files.images import get_image_dimensions
 from .models import ShopUser
 
 
-
 class ShopUserLoginForm(AuthenticationForm):
     class Meta:
         model = ShopUser
@@ -34,13 +33,13 @@ class ShopUserRegisterForm(UserCreationForm):
             raise forms.ValidationError("Вы слишком молоды!")
         return data
 
-    def clean_image_dimensions(self):
-        data = self.cleaned_data['avatar']
-        width, height = get_image_dimensions(data)
-        if width > 200:
-            raise forms.ValidationError("Фотография слишком широкая")
-        if height > 300:
-            raise forms.ValidationError("Фотография слишком высокая")
+    # def clean_image_dimensions(self):
+    #     data = self.cleaned_data['avatar']
+    #     width, height = get_image_dimensions(data)
+    #     if width > 200:
+    #         raise forms.ValidationError("Фотография слишком широкая")
+    #     if height > 300:
+    #         raise forms.ValidationError("Фотография слишком высокая")
 
 
 class ShopUserEditForm(UserChangeForm):
@@ -62,10 +61,10 @@ class ShopUserEditForm(UserChangeForm):
             raise forms.ValidationError("Вы слишком молоды!")
         return data
 
-    def clean_avatar(self):
-        data = self.cleaned_data['avatar']
-        width, height = get_image_dimensions(data)
-        if width > 300:
-            raise forms.ValidationError("Фотография слишком широкая")
-        if height > 200:
-            raise forms.ValidationError("Фотография слишком высокая")
+    # def clean_avatar(self):
+    #     data = self.cleaned_data['avatar']
+    #     width, height = get_image_dimensions(data)
+    #     if width > 300:
+    #         raise forms.ValidationError("Фотография слишком широкая")
+    #     if height > 200:
+    #         raise forms.ValidationError("Фотография слишком высокая")

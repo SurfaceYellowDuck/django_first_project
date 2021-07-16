@@ -6,16 +6,16 @@ from basketapp.models import Basket
 from .models import Product, ProductCategory
 
 
-def categorys(request):
-    title = 'главная'
-    products = Product.objects.all()
-    categorys = ProductCategory.objects.all()
-    context = {
-        'title': title,
-        'products': products,
-        'categorys': categorys,
-    }
-    return render(request, template_name='mainapp/test.html', context=context)
+# def categorys(request):
+#     title = 'главная'
+#     products = Product.objects.all()
+#     categorys = ProductCategory.objects.all()
+#     context = {
+#         'title': title,
+#         'products': products,
+#         'categorys': categorys,
+#     }
+#     return render(request, template_name='mainapp/test.html', context=context)
 
 
 def get_basket(user):
