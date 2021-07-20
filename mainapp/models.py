@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
@@ -26,4 +27,7 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.category.name})"
+
+    # def get_absolute_url(self):
+    #     return reverse('admin_staff:products', args=[self.pk])
 

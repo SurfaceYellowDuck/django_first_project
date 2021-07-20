@@ -3,19 +3,8 @@ import random
 from django.shortcuts import render, get_object_or_404
 
 from basketapp.models import Basket
-from .models import Product, ProductCategory
-
-
-# def categorys(request):
-#     title = 'главная'
-#     products = Product.objects.all()
-#     categorys = ProductCategory.objects.all()
-#     context = {
-#         'title': title,
-#         'products': products,
-#         'categorys': categorys,
-#     }
-#     return render(request, template_name='mainapp/test.html', context=context)
+from mainapp.models import ProductCategory, Product
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def get_basket(user):
@@ -37,32 +26,40 @@ def get_same_products(hot_product):
     return same_products
 
 
-def products(request, pk=None):
-    print(pk)
+def products(request, pk=None, page=1):
     title = 'продукты/каталог'
-    basket = []
-    if request.user.is_authenticated:
-        basket = Basket.objects.filter(user=request.user)
-    links_menu = ProductCategory.objects.all()
-    products = Product.objects.all()
-    if pk is not None:
-        if pk == '0':
-            products = Product.objects.all().order_by('price')
-            category = {'name': 'все'}
-        else:
-            category = get_object_or_404(ProductCategory, pk=pk)
-            products = Product.objects.filter(category__id=pk).order_by('price')
-        context = {
-            'title': title,
-            'links_menu': links_menu,
-            'category': category,
-            'products': products,
-        }
-
-        return render(request=request, template_name='mainapp/products.html', context=context)
+    basket = get_basket(request.user)
 
     hot_product = get_hot_product()
     same_products = get_same_products(hot_product)
+
+    links_menu = ProductCategory.objects.all()
+    products = Product.objects.all().order_by('price')
+
+    if pk is not None:
+        if pk == 0:
+            products = Product.objects.filter(is_deleted=False).order_by('price')
+            category = {'pk': 0, 'name': 'все'}
+        else:
+            category = get_object_or_404(ProductCategory, pk=pk)
+            products = Product.objects.filter(is_deleted=False, category__pk=pk).order_by('price')
+
+        paginator = Paginator(products, 2)
+        try:
+            products_paginator = paginator.page(page)
+        except PageNotAnInteger:
+            products_paginator = paginator.page(1)
+        except EmptyPage:
+            products_paginator = paginator.page(paginator.num_pages)
+        context = {
+            'title': title,
+            'links_menu': links_menu,
+            'hot_product': hot_product,
+            'same_products': same_products,
+            'products': products_paginator,
+            'category': category,
+        }
+        return render(request=request, template_name='mainapp/products.html', context=context)
 
     context = {
         'title': title,

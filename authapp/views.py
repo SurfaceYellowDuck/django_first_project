@@ -5,6 +5,21 @@ from django.urls import reverse
 from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm
 
 
+# class ProductCategoryUpdateView(UpdateView):
+#     model = ProductCategory
+#     template_name = 'adminapp/category_update.html'
+#     success_url = reverse_lazy('admin_staff:categories')
+#     form_class = CategoryForm
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['title'] = 'категории/редактирование'
+#         context['fields'] = '__all__'
+#
+#         return context
+#
+# class login()
+
 def login(request):
     title = 'вход'
 
