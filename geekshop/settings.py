@@ -72,6 +72,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'mainapp.context_processors.basket',
             ],
         },
     },
@@ -149,3 +150,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 AUTH_USER_MODEL = 'authapp.ShopUser'
 LOGIN_URL = '/auth/login/'
+
+DOMAIN_NAME = 'http://127.0.0.1:8000'
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '0ba73fbd991759'
+EMAIL_HOST_PASSWORD = '96eb9338077bcc'
+EMAIL_PORT = '2525'

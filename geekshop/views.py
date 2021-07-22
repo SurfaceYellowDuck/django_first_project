@@ -64,6 +64,7 @@ class IndexView(ListView):
 #     }
 #     return render(request, 'geekshop/index.html', context=context)
 
+
 class ContactsView(TemplateView):
     template_name = 'geekshop/contact.html'
 
