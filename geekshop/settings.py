@@ -9,9 +9,13 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import json
 import os
 from pathlib import Path
 
+import environ
+env = environ.Env()
+environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 import django.contrib.staticfiles.finders
 
@@ -22,9 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l621^$b#%&j+54ghkz7747bx6*xgdbbk+526vmsn*f)8@0rcp#'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
+SECRET_KEY = env('SECRET_KEY')
+
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -45,9 +51,9 @@ INSTALLED_APPS = [
     'authapp',
     'basketapp',
     'adminapp',
+
+    'social_django',
 ]
-
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -57,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware'
 ]
 
 ROOT_URLCONF = 'geekshop.urls'
@@ -73,6 +80,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'mainapp.context_processors.basket',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -156,3 +165,20 @@ EMAIL_HOST = 'smtp.mailtrap.io'
 EMAIL_HOST_USER = '0ba73fbd991759'
 EMAIL_HOST_PASSWORD = '96eb9338077bcc'
 EMAIL_PORT = '2525'
+
+
+vk_id = '7911806'
+vk_key = 'hOL4UCYFfhmWzvznrtsN'
+vk_secret = 'ad886fe4ad886fe4ad886fe449adf0d69aaad88ad886fe4cd76e51c2d2fc5d739e2c2b8'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.vk.VKOAuth2',
+)
+
+with open('geekshop/secret_keys.json', 'r', ) as file:
+    VK = json.load(file)
+
+SOCIAL_AUTH_VK_0AUTH2_ID = VK['SOCIAL_AUTH_VK_0AUTH2_ID']
+SOCIAL_AUTH_VK_OAUTH2_KEY = VK['SOCIAL_AUTH_VK_OAUTH2_KEY'],
+SOCIAL_AUTH_VK_0AUTH2_SECRET = VK['SOCIAL_AUTH_VK_0AUTH2_SECRET']

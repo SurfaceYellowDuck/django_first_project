@@ -2,10 +2,15 @@ from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm
 from django.conf import settings
 from .models import ShopUser
+from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic import CreateView, UpdateView
+
+
+# from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # class ProductCategoryUpdateView(UpdateView):
@@ -46,74 +51,136 @@ def verify(request, email, activation_key):
         return HttpResponseRedirect(reverse('index'))
 
 
-def login(request):
-    title = 'вход'
+class UserLoginView(LoginView):
+    form_class = ShopUserLoginForm
+    template_name = 'authapp/login.html'
 
-    login_form = ShopUserLoginForm(data=request.POST)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['next'] = self.request.GET['next'] if 'next' in self.request.GET.keys() else ''
+        context['fields'] = '__all__'
+        return dict(list(context.items()))
 
-    _next = request.GET['next'] if 'next' in request.GET.keys() else ''
-
-    if request.method == 'POST' and login_form.is_valid():
-        username = request.POST['username']
-        password = request.POST['password']
-
-        user = auth.authenticate(username=username, password=password)
-        if user and user.is_active:
-            auth.login(request, user)
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            self.form_valid(form)
             if 'next' in request.POST.keys():
                 return HttpResponseRedirect(request.POST['next'])
-            else:
-                return HttpResponseRedirect(reverse('index'))
+        else:
+            self.form_invalid(form)
+            return HttpResponseRedirect(reverse('index'))
 
-    context = {
-        'title': title,
-        'login_form': login_form,
-        'next': _next,
-    }
-    return render(request, 'authapp/login.html', context)
-
-
-def logout(request):
-    auth.logout(request)
-    return HttpResponseRedirect(reverse('index'))
-
-
-def register(request):
-    title = 'регистрация'
-
-    if request.method == 'POST':
-        register_form = ShopUserRegisterForm(request.POST, request.FILES)
-
-        if register_form.is_valid():
-            user = register_form.save()
-            if send_verify_email(user):
-                print('сообщение подтверждения отправлено')
-                return HttpResponseRedirect(reverse('auth:login'))
-            else:
-                print('ошибка отправки сообщения')
-                return HttpResponseRedirect(reverse('auth:login'))
-    else:
-        register_form = ShopUserRegisterForm()
-
-    content = {'title': title, 'register_form': register_form}
-
-    return render(request, 'authapp/register.html', content)
+# def login(request):
+#     title = 'вход'
+#
+#     login_form = ShopUserLoginForm(data=request.POST)
+#
+#     _next = request.GET['next'] if 'next' in request.GET.keys() else ''
+#
+#     if request.method == 'POST' and login_form.is_valid():
+#         username = request.POST['username']
+#         password = request.POST['password']
+#
+        # user = auth.authenticate(username=username, password=password)
+        # if user and user.is_active:
+        #     auth.login(request, user)
+        #     if 'next' in request.POST.keys():
+        #         return HttpResponseRedirect(request.POST['next'])
+        #     else:
+        #         return HttpResponseRedirect(reverse('index'))
+#
+#     context = {
+#         'title': title,
+#         'login_form': login_form,
+#         'next': _next,
+#     }
+#     return render(request, 'authapp/login.html', context)
 
 
-def edit(request):
-    title = 'редактирование'
-
-    if request.method == 'POST':
-        edit_form = ShopUserEditForm(request.POST, request.FILES, instance=request.user)
-        if edit_form.is_valid():
-            edit_form.save()
-            return HttpResponseRedirect(reverse('auth:edit'))
-    else:
-        edit_form = ShopUserEditForm(instance=request.user)
-
-    content = {'title': title, 'edit_form': edit_form}
-
-    return render(request, 'authapp/edit.html', content)
+class UserLogoutView(LogoutView):
+    next_page = reverse_lazy('index')
 
 
+# def logout(request):
+#     auth.logout(request)
+#     return HttpResponseRedirect(reverse('index'))
 
+class UserRegistrationView(CreateView):
+    model = ShopUser
+    form_class = ShopUserRegisterForm
+    template_name = "authapp/register.html"
+    success_url = reverse_lazy('index')
+
+    def get_context_data(self, **kwargs):
+        context = super(UserRegistrationView, self).get_context_data()
+        context['title'] = 'пользователи/создать'
+        context['fields'] = '__all__'
+
+        return context
+
+    def get_form_class(self):
+        return self.form_class
+
+    def post(self, request, *args, **kwargs):
+        user = self.get_form().save()
+        if send_verify_email(user):
+            print('сообщение подтверждения отправлено')
+            return HttpResponseRedirect(reverse('auth:login'))
+        else:
+            print('ошибка отправки сообщения')
+            return HttpResponseRedirect(reverse('auth:login'))
+
+# def register(request):
+#     title = 'регистрация'
+#
+#     if request.method == 'POST':
+#         register_form = ShopUserRegisterForm(request.POST, request.FILES)
+#
+#         if register_form.is_valid():
+#             user = register_form.save()
+#             if send_verify_email(user):
+#                 print('сообщение подтверждения отправлено')
+#                 return HttpResponseRedirect(reverse('auth:login'))
+#             else:
+#                 print('ошибка отправки сообщения')
+#                 return HttpResponseRedirect(reverse('auth:login'))
+#     else:
+#         register_form = ShopUserRegisterForm()
+#
+#     content = {'title': title, 'register_form': register_form}
+#
+#     return render(request, 'authapp/register.html', content)
+
+
+class UserEditView(UpdateView):
+    model = ShopUser
+    template_name = 'authapp/edit.html'
+    # success_url = reverse_lazy('index')
+    form_class = ShopUserEditForm
+
+    # fields = ('username', 'first_name', 'last_name', 'email', 'age')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'пользователи/редактирование'
+        context['fields'] = '__all__'
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('authapp:edit', args=[self.request.user.pk])
+
+# def edit(request):
+#     title = 'редактирование'
+#
+#     if request.method == 'POST':
+#         edit_form = ShopUserEditForm(request.POST, request.FILES, instance=request.user)
+#         if edit_form.is_valid():
+#             edit_form.save()
+#             return HttpResponseRedirect(reverse('auth:edit'))
+#     else:
+#         edit_form = ShopUserEditForm(instance=request.user)
+#
+#     content = {'title': title, 'edit_form': edit_form}
+#
+#     return render(request, 'authapp/edit.html', content)

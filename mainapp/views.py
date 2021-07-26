@@ -1,22 +1,23 @@
 import random
+from pyexpat import model
 
 from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView
 
 from basketapp.models import Basket
 from mainapp.models import ProductCategory, Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
-# def get_basket(user):
-#     if user.is_authenticated:
-#         return Basket.objects.filter(user=user)
-#     else:
-#         return []
+def get_basket(user):
+    if user.is_authenticated:
+        return Basket.objects.filter(user=user)
+    else:
+        return []
 
 
 def get_hot_product():
     products = Product.objects.all()
-
     return random.sample(list(products), 1)[0]
 
 
@@ -24,6 +25,33 @@ def get_same_products(hot_product):
     same_products = Product.objects.filter(category=hot_product.category).exclude(pk=hot_product.pk)
 
     return same_products
+
+
+# class ProductsView(ListView):
+#     model = Product
+#     template_name = 'mainapp/products.html'
+#
+#     paginate_by = 3
+#
+#     def get_hot_product(self):
+#         products = Product.objects.all()
+#
+#         return random.sample(list(products), 1)[0]
+#
+#     def get_same_products(self, hot_product):
+#         same_products = Product.objects.filter(category=hot_product.category).exclude(pk=hot_product.pk)
+#
+#         return same_products
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(ProductsView, self).get_context_data()
+#         context['hot_product'] = self.get_hot_product()
+#         context['same_products'] = self.get_same_products(context['hot_product'])
+#         context['links_menu'] = ProductCategory.objects.all()
+#         context['products'] = Product.objects.all().order_by('price')
+#
+#     def get_queryset(self):
+
 
 
 def products(request, pk=None, page=1):
