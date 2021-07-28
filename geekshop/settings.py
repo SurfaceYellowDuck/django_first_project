@@ -14,10 +14,10 @@ import os
 from pathlib import Path
 
 import environ
+import django.contrib.staticfiles.finders
 env = environ.Env()
 environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-import django.contrib.staticfiles.finders
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware'
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'geekshop.urls'
@@ -86,8 +86,20 @@ TEMPLATES = [
         },
     },
 ]
-
+LOGIN_ERROR_URL = '/'
 WSGI_APPLICATION = 'geekshop.wsgi.application'
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.create_user',
+    'authapp.pipeline.save_user_profile',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
 
 
 # Database
@@ -167,18 +179,26 @@ EMAIL_HOST_PASSWORD = '96eb9338077bcc'
 EMAIL_PORT = '2525'
 
 
-vk_id = '7911806'
-vk_key = 'hOL4UCYFfhmWzvznrtsN'
-vk_secret = 'ad886fe4ad886fe4ad886fe449adf0d69aaad88ad886fe4cd76e51c2d2fc5d739e2c2b8'
-
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.vk.VKOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+    # 'social_core.backends.google.GoogleOAuth2'
 )
 
 with open('geekshop/secret_keys.json', 'r', ) as file:
     VK = json.load(file)
 
-SOCIAL_AUTH_VK_0AUTH2_ID = VK['SOCIAL_AUTH_VK_0AUTH2_ID']
-SOCIAL_AUTH_VK_OAUTH2_KEY = VK['SOCIAL_AUTH_VK_OAUTH2_KEY'],
-SOCIAL_AUTH_VK_0AUTH2_SECRET = VK['SOCIAL_AUTH_VK_0AUTH2_SECRET']
+# SOCIAL_AUTH_VK_OAUTH2_KEY = VK['SOCIAL_AUTH_VK_OAUTH2_ID']
+# SOCIAL_AUTH_VK_OAUTH2_SECRET = VK['SOCIAL_AUTH_VK_OAUTH2_KEY']
+SOCIAL_AUTH_VK_OAUTH2_IGNORE_DEFAULT_SCOPE = True
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+SOCIAL_AUTH_VK_OAUTH2_KEY = env('SOCIAL_AUTH_VK_OAUTH2_ID')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = env('SOCIAL_AUTH_VK_OAUTH2_KEY')
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = VK['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY']
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = VK['SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET']
+
+
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')

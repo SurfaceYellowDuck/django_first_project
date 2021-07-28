@@ -1,13 +1,15 @@
 from django.core.mail import send_mail
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
 from django.urls import reverse, reverse_lazy
-from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm
+from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm, ShopUserProfileEditForm
 from django.conf import settings
 from .models import ShopUser
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import CreateView, UpdateView
+from django.forms import formset_factory
 
 
 # from django.contrib.auth.mixins import LoginRequiredMixin
@@ -67,6 +69,8 @@ class UserLoginView(LoginView):
             self.form_valid(form)
             if 'next' in request.POST.keys():
                 return HttpResponseRedirect(request.POST['next'])
+            else:
+                return HttpResponseRedirect(reverse('index'))
         else:
             self.form_invalid(form)
             return HttpResponseRedirect(reverse('index'))
@@ -157,30 +161,48 @@ class UserEditView(UpdateView):
     model = ShopUser
     template_name = 'authapp/edit.html'
     # success_url = reverse_lazy('index')
-    form_class = ShopUserEditForm
 
+    # def get_full_form(self):
+    #     form_class_1 = formset_factory(ShopUserEditForm)
+    #     form_class_2 = formset_factory(ShopUserProfileEditForm)
+    #     full_form = []
+    #     for el in form_class_2():
+    #         full_form.append(el.as_table())
+    #     for el in form_class_1():
+    #         full_form.append(el.as_table())
+    #     for el in full_form:
+    #         return full_form
+
+    # form_class = get_full_form()
     # fields = ('username', 'first_name', 'last_name', 'email', 'age')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['form_class'] = self.get_full_form()
         context['title'] = 'пользователи/редактирование'
         context['fields'] = '__all__'
         return context
 
     def get_success_url(self):
         return reverse_lazy('authapp:edit', args=[self.request.user.pk])
+@transaction.atomic
+def edit(request, pk):
+    title = 'редактирование'
 
-# def edit(request):
-#     title = 'редактирование'
-#
-#     if request.method == 'POST':
-#         edit_form = ShopUserEditForm(request.POST, request.FILES, instance=request.user)
-#         if edit_form.is_valid():
-#             edit_form.save()
-#             return HttpResponseRedirect(reverse('auth:edit'))
-#     else:
-#         edit_form = ShopUserEditForm(instance=request.user)
-#
-#     content = {'title': title, 'edit_form': edit_form}
-#
-#     return render(request, 'authapp/edit.html', content)
+    if request.method == 'POST':
+        edit_form = ShopUserEditForm(request.POST, request.FILES, instance=request.user)
+        profile_form = ShopUserProfileEditForm(request.POST, instance=request.user.shopuserprofile)
+        if edit_form.is_valid() and profile_form.is_valid():
+            edit_form.save()
+            return HttpResponseRedirect(reverse('auth:edit'))
+    else:
+        edit_form = ShopUserEditForm(instance=request.user)
+        profile_form = ShopUserProfileEditForm(instance=request.user.shopuserprofile)
+
+    context = {
+        'title': title,
+        'edit_form': edit_form,
+        'profile_form': profile_form,
+    }
+
+    return render(request, 'authapp/edit.html', context)

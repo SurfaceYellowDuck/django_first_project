@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserLoginView, UserLogoutView, UserRegistrationView, UserEditView, send_verify_email, verify
+from .views import UserLoginView, UserLogoutView, UserRegistrationView, UserEditView, verify
 
 app_name = 'authapp'
 
