@@ -1,3 +1,5 @@
+from django.db import transaction
+from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -6,11 +8,16 @@ from adminapp.forms import ShopUserAdminEditForm, CategoryForm, ProductForm
 from authapp.forms import ShopUserRegisterForm, ShopUserEditForm
 from authapp.models import ShopUser
 from django.shortcuts import get_object_or_404, render
+
+from basketapp.models import Basket
 from mainapp.models import Product, ProductCategory
 from django.contrib.auth.decorators import user_passes_test
 
 from django.views.generic.list import ListView
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
+
+from ordersapp.forms import OrderItemForm
+from ordersapp.models import Order, OrderItem
 
 
 class UsersListView(ListView):
@@ -401,3 +408,58 @@ class ProductDeleteView(DeleteView):
 #         'product_to_delete': product,
 #     }
 #     return render(request, 'adminapp/product_delete.html', context)
+
+
+class OrdersView(ListView):
+    model = Order
+    template_name = 'adminapp/order_list.html'
+    def get_queryset(self):
+        return Order.objects.all()
+
+
+class OrderCreate(CreateView):
+    model = Order
+    fields = []
+    context_object_name = 'object'
+    template_name = 'adminapp/order_create.html'
+    success_url = reverse_lazy('adminapp:orders_list')
+
+    def get_context_data(self, **kwargs):
+        data = super(OrderCreate, self).get_context_data(**kwargs)
+        OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
+
+        if self.request.POST:
+            formset = OrderFormSet(self.request.POST)
+        else:
+            basket_items = Basket.objects.filter(user=self.request.user)
+            if len(basket_items):
+                OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=len(basket_items))
+                formset = OrderFormSet()
+                for num, form in enumerate(formset.forms):
+                    form.initial['product'] = basket_items[num].product
+                    form.initial['quantity'] = basket_items[num].quantity
+                # basket_items.delete()
+            else:
+                formset = OrderFormSet()
+
+        data['orderitems'] = formset
+
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        orderitems = context['orderitems']
+
+        with transaction.atomic():
+            form.instance.user = self.request.user
+            self.object = form.save()
+            if orderitems.is_valid():
+                orderitems.instance = self.object
+                orderitems.save()
+                basket_items = Basket.objects.filter(user=self.request.user)
+                basket_items.delete()
+
+        if self.object.get_total_cost() == 0:
+            self.object.delete()
+
+        return super(OrderCreate, self).form_valid(form)
