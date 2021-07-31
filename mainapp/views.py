@@ -53,7 +53,6 @@ def get_same_products(hot_product):
 #     def get_queryset(self):
 
 
-
 def products(request, pk=None, page=1):
     title = 'продукты/каталог'
     # basket = get_basket(request.user)
@@ -72,7 +71,7 @@ def products(request, pk=None, page=1):
             category = get_object_or_404(ProductCategory, pk=pk)
             products = Product.objects.filter(is_deleted=False, category__pk=pk).order_by('price')
 
-        paginator = Paginator(products, 2)
+        paginator = Paginator(products, 1)
         try:
             products_paginator = paginator.page(page)
         except PageNotAnInteger:

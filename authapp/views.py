@@ -157,9 +157,9 @@ class UserRegistrationView(CreateView):
 #     return render(request, 'authapp/register.html', content)
 
 
-class UserEditView(UpdateView):
-    model = ShopUser
-    template_name = 'authapp/edit.html'
+# class UserEditView(UpdateView):
+#     model = ShopUser
+#     template_name = 'authapp/edit.html'
     # success_url = reverse_lazy('index')
 
     # def get_full_form(self):
@@ -176,15 +176,15 @@ class UserEditView(UpdateView):
     # form_class = get_full_form()
     # fields = ('username', 'first_name', 'last_name', 'email', 'age')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form_class'] = self.get_full_form()
-        context['title'] = 'пользователи/редактирование'
-        context['fields'] = '__all__'
-        return context
-
-    def get_success_url(self):
-        return reverse_lazy('authapp:edit', args=[self.request.user.pk])
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['form_class'] = self.get_full_form()
+    #     context['title'] = 'пользователи/редактирование'
+    #     context['fields'] = '__all__'
+    #     return context
+    #
+    # def get_success_url(self):
+    #     return reverse_lazy('authapp:edit', args=[self.request.user.pk])
 @transaction.atomic
 def edit(request, pk):
     title = 'редактирование'

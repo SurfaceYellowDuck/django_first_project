@@ -262,12 +262,13 @@ class ProductListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'продукты/'
+        context['category_id'] = self.kwargs['pk']
         return context
 
     def get_queryset(self):
         products = Product.objects.filter(category__pk=self.kwargs['pk']).order_by('is_deleted')
-        # category = ProductCategory.objects.filter(pk=self.kwargs['pk'])
         return products
+
 
 # def products(request, pk):
 #     title = 'админка/продукт'

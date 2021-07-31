@@ -130,3 +130,7 @@ dmypy.json
 .idea/
 geekshop/vk.json
 
+
+ordersapp/migrations/
+
+authapp/migrations/
