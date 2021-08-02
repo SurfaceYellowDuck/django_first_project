@@ -1,13 +1,14 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 
-from adminapp.forms import ShopUserAdminEditForm, CategoryForm, ProductForm
+from adminapp.forms import CategoryForm, ProductForm, AdminOrderItemEditForm, AdminOrderForm
 from authapp.forms import ShopUserRegisterForm, ShopUserEditForm
 from authapp.models import ShopUser
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 
 from basketapp.models import Basket
 from mainapp.models import Product, ProductCategory
@@ -30,25 +31,8 @@ class UsersListView(ListView):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     context = super(UsersListView, self).get_context_data()
-    #     context['title'] = 'админка/пользователи'
-    #     return context
-
     def get_queryset(self):
         return ShopUser.objects.all().order_by('-is_active', '-is_superuser', '-is_staff', 'username')
-# @user_passes_test(lambda u: u.is_superuser)
-# def users(request):
-#     title = 'админка/пользователи'
-#
-#     users_list = ShopUser.objects.all().order_by('-is_active', '-is_superuser', '-is_staff', 'username')
-#
-#     context = {
-#         'title': title,
-#         'objects': users_list
-#     }
-#
-#     return render(request, 'adminapp/users.html', context)
 
 
 class UserCreateView(CreateView):
@@ -62,21 +46,6 @@ class UserCreateView(CreateView):
         context['title'] = 'пользователи/создать'
 
         return context
-# def user_create(request):
-#     title = 'пользователи/создать'
-#     if request.method == 'POST':
-#         user_form = ShopUserRegisterForm(request.POST, request.FILES)
-#
-#         if user_form.is_valid():
-#             user_form.save()
-#             return HttpResponseRedirect(reverse('admin_staff:users'))
-#     else:
-#         user_form = ShopUserRegisterForm()
-#
-#     context = {'title': title,
-#                'user_form': user_form}
-#
-#     return render(request, 'adminapp/user_create.html', context)
 
 
 class UsersUpdateView(UpdateView):
@@ -84,35 +53,12 @@ class UsersUpdateView(UpdateView):
     template_name = 'adminapp/user_update.html'
     success_url = reverse_lazy('admin_staff:users')
     form_class = ShopUserEditForm
-    # fields = ('username', 'first_name', 'last_name', 'email', 'age')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'пользователи/редактирование'
         context['fields'] = ('username', 'first_name', 'last_name', 'email', 'age')
         return context
-
-
-# def user_update(request, pk):
-#     title = 'пользователи/редактирование'
-#
-#     edit_user = get_object_or_404(ShopUser, pk=pk)
-#
-#     if request.method == 'POST':
-#         edit_form = ShopUserAdminEditForm(request.POST, request.FILES, instance=edit_user)
-#         if edit_form.is_valid():
-#             edit_form.save()
-#
-#             return HttpResponseRedirect(reverse('admin_staff:users'))
-#     else:
-#         edit_form = ShopUserAdminEditForm(instance=edit_user)
-#
-#     context = {
-#         'title': title,
-#         'user_form': edit_form,
-#     }
-#
-#     return render(request, 'adminapp/user_update.html', context)
 
 
 class UserDeleteView(DeleteView):
@@ -126,21 +72,6 @@ class UserDeleteView(DeleteView):
         self.object.is_deleted = True
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
-
-# def user_delete(request, pk):
-#     title = 'пользователи/удаление'
-#     user = get_object_or_404(ShopUser, pk=pk)
-#     if request.method == 'POST':
-#         user.is_deleted = True
-#         user.is_active = False
-#         user.save()
-#         # user.delete()
-#         return HttpResponseRedirect(reverse('admin_staff:users'))
-#     context = {
-#         'title': title,
-#         'user_to_delete': user,
-#     }
-#     return render(request, 'adminapp/user_delete.html', context)
 
 
 class ProductCategoryView(ListView):
@@ -156,19 +87,6 @@ class ProductCategoryView(ListView):
     def get_queryset(self):
         return ProductCategory.objects.all().order_by('is_deleted')
 
-# @user_passes_test(lambda u: u.is_superuser)
-# def categories(request):
-#     title = 'админка/категории'
-#
-#     categories_list = ProductCategory.objects.all()
-#
-#     context = {
-#         'title': title,
-#         'objects': categories_list
-#     }
-#
-#     return render(request, 'adminapp/categories.html', context)
-
 
 class ProductCategoryCreateView(CreateView):
     model = ProductCategory
@@ -181,22 +99,6 @@ class ProductCategoryCreateView(CreateView):
         context['title'] = 'категории/создать'
 
         return context
-
-# def category_create(request):
-#     title = 'категории/создать'
-#     if request.method == 'POST':
-#         category_form = CategoryForm(request.POST, request.FILES)
-#
-#         if category_form.is_valid():
-#             category_form.save()
-#             return HttpResponseRedirect(reverse('admin_staff:categories'))
-#     else:
-#         category_form = CategoryForm()
-#
-#     context = {'title': title,
-#                'category_form': category_form}
-#
-#     return render(request, 'adminapp/category_create.html', context)
 
 
 class ProductCategoryUpdateView(UpdateView):
@@ -211,24 +113,6 @@ class ProductCategoryUpdateView(UpdateView):
         context['fields'] = '__all__'
 
         return context
-# def category_update(request, pk):
-#     title = 'категории/редактирование'
-#     edit_category = get_object_or_404(ProductCategory, pk=pk)
-#
-#     if request.method == 'POST':
-#         edit_form = CategoryForm(request.POST, request.FILES, instance=edit_category)
-#         if edit_form.is_valid():
-#             edit_form.save()
-#             return HttpResponseRedirect(reverse('admin_staff:categories'))
-#     else:
-#         edit_form = CategoryForm(instance=edit_category)
-#
-#     context = {
-#         'title': title,
-#         'category_form': edit_form,
-#     }
-#
-#     return render(request, 'adminapp/category_update.html', context)
 
 
 class ProductCategoryDeleteView(DeleteView):
@@ -241,25 +125,11 @@ class ProductCategoryDeleteView(DeleteView):
         self.object.is_deleted = True
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
-# def category_delete(request, pk):
-#     title = 'категории/удаление'
-#     category = get_object_or_404(ProductCategory, pk=pk)
-#     if request.method == 'POST':
-#         category.is_deleted = True
-#         category.save()
-#         # category.delete()
-#         return HttpResponseRedirect(reverse('admin_staff:categories'))
-#     context = {
-#         'title': title,
-#         'category_to_delete': category,
-#     }
-#     return render(request, 'adminapp/category_delete.html', context)
 
 
 class ProductListView(ListView):
     model = Product
     template_name = 'adminapp/products.html'
-    # context_object_name = 'objects'
     paginate_by = 3
 
     @method_decorator(user_passes_test(lambda u: u.is_superuser))
@@ -275,21 +145,6 @@ class ProductListView(ListView):
     def get_queryset(self):
         products = Product.objects.filter(category__pk=self.kwargs['pk']).order_by('is_deleted')
         return products
-
-
-# def products(request, pk):
-#     title = 'админка/продукт'
-#
-#     category = get_object_or_404(ProductCategory, pk=pk)
-#     products_list = Product.objects.filter(category__pk=pk).order_by('name')
-#
-#     context = {
-#         'title': title,
-#         'category': category,
-#         'objects': products_list,
-#     }
-#
-#     return render(request, 'adminapp/products.html', context)
 
 
 class ProductCreateView(CreateView):
@@ -309,37 +164,10 @@ class ProductCreateView(CreateView):
     def get_success_url(self):
         return reverse_lazy('admin_staff:products', args=[self.kwargs['pk']])
 
-# def product_create(request, pk):
-#     title = 'продукты/создать'
-#     category = get_object_or_404(ProductCategory, pk=pk)
-#     if request.method == 'POST':
-#         product_form = ProductForm(request.POST, request.FILES)
-#         if product_form.is_valid():
-#             product_form.save()
-#             return HttpResponseRedirect(reverse('admin_staff:products', args=[pk]))
-#     else:
-#         product_form = ProductForm(initial={'category': category})
-#
-#     context = {'title': title,
-#                'update_form': product_form,
-#                'category': category,
-#                }
-#
-#     return render(request, 'adminapp/product_create.html', context)
-
 
 class ProductReadView(DetailView):
     model = Product
     template_name = 'adminapp/product_read.html'
-
-# def product_read(request, pk):
-#     title = 'продукты/подробнее'
-#     product = get_object_or_404(Product, pk=pk)
-#     context = {
-#         'title': title,
-#         'product': product,
-#     }
-#     return render(request, 'adminapp/product_read.html', context)
 
 
 class ProductUpdateView(UpdateView):
@@ -359,25 +187,6 @@ class ProductUpdateView(UpdateView):
         return reverse_lazy('admin_staff:products', args=[self.object.category.pk])
 
 
-# def product_update(request, pk):
-#     title = 'продукты/редактировать'
-#     edit_product = get_object_or_404(Product, pk=pk)
-#     if request.method == 'POST':
-#         edit_form = ProductForm(request.POST, request.FILES, instance=edit_product)
-#         if edit_form.is_valid():
-#             edit_form.save()
-#             return HttpResponseRedirect(reverse('admin_staff:products', args=[edit_product.category.pk]))
-#     else:
-#         edit_form = ProductForm(instance=edit_product)
-#
-#     context = {'title': title,
-#                'update_form': edit_form,
-#                'category': edit_product.category,
-#                'product': edit_product
-#                }
-#
-#     return render(request, 'adminapp/product_update.html', context)
-
 class ProductDeleteView(DeleteView):
     model = Product
     template_name = 'adminapp/product_delete.html'
@@ -391,33 +200,17 @@ class ProductDeleteView(DeleteView):
         self.object.is_deleted = True
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
-    # def get_success_url(self):
-    #     return reverse_lazy('admin_staff:products', args=[self.object.category.pk])
-
-# def product_delete(request, pk):
-#     title = 'продукты/удаление'
-#     product = get_object_or_404(Product, pk=pk)
-#     if request.method == 'POST':
-#         product.is_deleted = True
-#         # product.is_active = False
-#         product.save()
-#         # product.delete()
-#         return HttpResponseRedirect(reverse('admin_staff:products', args=[product.category.pk]))
-#     context = {
-#         'title': title,
-#         'product_to_delete': product,
-#     }
-#     return render(request, 'adminapp/product_delete.html', context)
 
 
 class OrdersView(ListView):
     model = Order
+    # fields = ('status',)
     template_name = 'adminapp/order_list.html'
     def get_queryset(self):
         return Order.objects.all()
 
 
-class OrderCreate(CreateView):
+class AdminOrderCreate(CreateView):
     model = Order
     fields = []
     context_object_name = 'object'
@@ -425,20 +218,19 @@ class OrderCreate(CreateView):
     success_url = reverse_lazy('adminapp:orders_list')
 
     def get_context_data(self, **kwargs):
-        data = super(OrderCreate, self).get_context_data(**kwargs)
-        OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
+        data = super(AdminOrderCreate, self).get_context_data(**kwargs)
+        OrderFormSet = inlineformset_factory(Order, OrderItem, form=AdminOrderForm, extra=1)
 
         if self.request.POST:
             formset = OrderFormSet(self.request.POST)
         else:
             basket_items = Basket.objects.filter(user=self.request.user)
             if len(basket_items):
-                OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=len(basket_items))
+                OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
                 formset = OrderFormSet()
                 for num, form in enumerate(formset.forms):
                     form.initial['product'] = basket_items[num].product
                     form.initial['quantity'] = basket_items[num].quantity
-                # basket_items.delete()
             else:
                 formset = OrderFormSet()
 
@@ -462,4 +254,45 @@ class OrderCreate(CreateView):
         if self.object.get_total_cost() == 0:
             self.object.delete()
 
-        return super(OrderCreate, self).form_valid(form)
+        return super(AdminOrderCreate, self).form_valid(form)
+
+
+class AdminOrderUpdate(LoginRequiredMixin, UpdateView):
+    model = Order
+    fields = []
+    context_object_name = 'object'
+    success_url = reverse_lazy('ordersapp:orders_list')
+
+    def get_context_data(self, **kwargs):
+        data = super(AdminOrderUpdate, self).get_context_data(**kwargs)
+        OrderFormSet = inlineformset_factory(Order, OrderItem, form=AdminOrderItemEditForm, extra=1)
+        # basket_items = Basket.objects.filter(user=self.request.user)
+        if self.request.POST:
+            data['orderitems'] = OrderFormSet(self.request.POST, instance=self.object)
+        else:
+            formset = OrderFormSet(instance=self.object)
+            for form in formset.forms:
+                if form.instance.pk:
+                    form.initial['price'] = form.instance.product.price
+            # if self.object.status == "PD":
+                 # basket_items.delete()
+            data['orderitems'] = formset
+
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        orderitems = context['orderitems']
+
+        with transaction.atomic():
+            form.instance.user = self.request.user
+            self.object = form.save()
+            if orderitems.is_valid():
+                orderitems.instance = self.object
+                orderitems.save()
+
+        # удаляем пустой заказ
+        if self.object.get_total_cost() == 0:
+            self.object.delete()
+
+        return super(AdminOrderUpdate, self).form_valid(form)

@@ -20,6 +20,7 @@
                             <th>Создан</th>
                             <th>Обновлен</th>
                             <th>Редактировать</th>
+                            <th>Статус</th>
                             <th>Удалить</th>
                         </tr>
                         </thead>
@@ -30,6 +31,7 @@
                             <th>Создан</th>
                             <th>Обновлен</th>
                             <th>Редактировать</th>
+                            <th>Статус</th>
                             <th>Удалить</th>
                         </tr>
                         </tfoot>
@@ -41,11 +43,11 @@
                                 <td>{{ order.created|date:"Y-m-d H:i:s" }}</td>
                                 <td>{{ order.updated|date:"Y-m-d H:i:s" }}</td>
                                 <td>
-                                    <a href="{#% url 'admin_staff:category_update' pk=category.id %#}">
+                                    <a href="{% url 'admin_staff:order_update' pk=order.id %}">
                                         <i class="fa fa-edit"></i>
                                     </a>
                                 </td>
-
+                                <td>{{ order.status }}</td>
                                 <td>
                                     <a {#% if category.is_deleted %#} class="invisible" {#% endif %#} href="{#% url 'admin_staff:category_delete' pk=category.id %#}">
                                         <i class="fa fa-times-circle"></i>
