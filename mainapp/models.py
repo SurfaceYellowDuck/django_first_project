@@ -25,6 +25,10 @@ class Product(models.Model):
     quantity = models.PositiveIntegerField(verbose_name='количество на складе', default=0)
     is_deleted = models.BooleanField(default=False)
 
+    @staticmethod
+    def get_items():
+        return Product.objects.filter(is_deleted=False).order_by('category', 'name')
+
     def __str__(self):
         return f"{self.name} ({self.category.name})"
 
