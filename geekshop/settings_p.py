@@ -108,13 +108,14 @@ DATABASES = {
     'default': {
         'NAME': 'geekshop',
         'ENGINE': 'django.db.backends.postgresql',
-        'USER': 'django',
+        'USER': 'postgres',
     }
 }
 
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
