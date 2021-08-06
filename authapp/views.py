@@ -8,8 +8,7 @@ from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditF
 from django.conf import settings
 from .models import ShopUser
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import CreateView, UpdateView
-from django.forms import formset_factory
+from django.views.generic import CreateView
 
 
 # from django.contrib.auth.mixins import LoginRequiredMixin
