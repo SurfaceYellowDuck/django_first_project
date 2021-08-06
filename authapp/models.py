@@ -1,6 +1,4 @@
 from datetime import timedelta
-
-# from Tools.demo.mcast import sender
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.dispatch import receiver
