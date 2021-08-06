@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.idea/
+geekshop/vk.json
+
+
+ordersapp/migrations/
+
+authapp/migrations/
