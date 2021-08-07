@@ -1,6 +1,6 @@
 import json
-from django.views.generic import ListView, TemplateView, DetailView
-from basketapp.models import Basket, Product
+from django.views.generic import ListView, TemplateView
+from basketapp.models import Product
 
 
 def read_json(way_to_file):
