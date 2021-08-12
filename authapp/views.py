@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.db import transaction
 from django.http import HttpResponseRedirect
@@ -184,6 +185,7 @@ class UserRegistrationView(CreateView):
     #
     # def get_success_url(self):
     #     return reverse_lazy('authapp:edit', args=[self.request.user.pk])
+@login_required
 @transaction.atomic
 def edit(request):
     title = 'редактирование'

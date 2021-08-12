@@ -8,7 +8,7 @@ class ProductCategory(models.Model):
     description = models.CharField(verbose_name='описание категории', blank=True, max_length=2048)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_deleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(db_index=True, default=False)
 
     def __str__(self):
         return self.name or f'Category id - {self.pk}'
@@ -22,7 +22,7 @@ class Product(models.Model):
     description = models.TextField(verbose_name='описание продукта', blank=True)
     price = models.DecimalField(verbose_name='цена продукта', max_digits=8, decimal_places=2, default=0)
     quantity = models.PositiveIntegerField(verbose_name='количество на складе', default=0)
-    is_deleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(db_index=True, default=False)
 
     @staticmethod
     def get_items():

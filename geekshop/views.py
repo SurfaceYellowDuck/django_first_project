@@ -17,7 +17,7 @@ def read_json(way_to_file):
 class IndexView(ListView):
     model = Product
     template_name = 'geekshop/index.html'
-    queryset_products = Product.objects.all()[:3]
+    queryset_products = Product.objects.filter(is_deleted=True, category__is_deleted=False).select_related('category')[:3]
     # queryset_basket = ''
     # @method_decorator(login_required())
     # def dispatch(self, request, *args, **kwargs):
