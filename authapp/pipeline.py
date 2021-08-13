@@ -1,9 +1,8 @@
-from datetime import datetime, time
-from urllib.parse import urlencode, urlparse, urlunparse
+from datetime import datetime
+from urllib.parse import urlencode, urlunparse
 
 import requests
 from django.utils import timezone
-from social_core.exceptions import AuthForbidden
 
 from authapp.models import ShopUserProfile
 

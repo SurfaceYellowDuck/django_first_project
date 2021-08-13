@@ -1,20 +1,6 @@
-# import self as self
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
 import json
-
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.generic import ListView, TemplateView, DetailView
-
-from authapp.models import ShopUser
-from basketapp.models import Basket, Product
-
-# page_header = [
-#         {'page_name': 'contacts', 'header': 'НАШИ КОНТАКТЫ'},
-#         {'page_name': 'index', 'header': 'УДОБНЫЕ СТУЛЬЯ'},
-# ]
-from basketapp.views import basket
+from django.views.generic import ListView, TemplateView
+from basketapp.models import Product
 
 
 def read_json(way_to_file):

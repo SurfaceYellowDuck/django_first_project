@@ -1,26 +1,23 @@
 [
   {
-      "name": "Всё",
-      "description": "Категория со всеми продуктами"
+      "name": "Стулья",
+      "description": "Это супер стулья"
   },
-
   {
       "name": "Дом",
-      "description": "Категория с продуктами для дома"
+      "description": ""
   },
-
   {
-      "name": "Офис",
-      "description": "Продукты для офиса"
-  },
 
+      "name": "Офис",
+      "description": ""
+  },
   {
       "name": "Модерн",
-      "description": "Продукты в стиле модерн"
+      "description": ""
   },
-
   {
       "name": "Классика",
-      "description": "Продукты в классическом стиле"
+      "description": ""
   }
 ]
