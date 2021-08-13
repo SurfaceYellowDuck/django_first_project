@@ -1,0 +1,34 @@
+http://194.67.105.254/	geekshop.views.IndexView	index
+http://194.67.105.254/products/	mainapp.views.products	products:index
+http://194.67.105.254/products/category/1/	mainapp.views.products	products:category
+http://194.67.105.254/products/category/1/page/1/	mainapp.views.products	products:page
+http://194.67.105.254/products/media/<path>	django.views.static.serve
+http://194.67.105.254/products/product/1/	mainapp.views.product	products:product
+htthttp://194.67.105.254/http://194.67.105.254/products/
+http://194.67.105.254/contact/
+http://194.67.105.254/products/category/1/
+http://194.67.105.254/products/category/2/
+http://194.67.105.254/products/category/3/
+http://194.67.105.254/products/category/4/
+http://194.67.105.254/basket/
+http://194.67.105.254/order/
+http://194.67.105.254/auth/edit/
+http://194.67.105.254/order/update/30/
+http://194.67.105.254/order/update/29/
+http://194.67.105.254/order/update/27/
+http://194.67.105.254/order/update/25/
+http://194.67.105.254/order/update/24/
+http://194.67.105.254/order/update/23/
+http://194.67.105.254/order/update/22/
+http://194.67.105.254/order/update/21/
+http://194.67.105.254/order/update/20/
+http://194.67.105.254/order/update/19/
+http://194.67.105.254/order/update/18/
+http://194.67.105.254/order/update/15/
+http://194.67.105.254/order/update/14/
+http://194.67.105.254/order/update/13/
+http://194.67.105.254/order/update/12/
+http://194.67.105.254/order/update/10/
+http://194.67.105.254/order/update/8/
+http://194.67.105.254/order/update/7/
+http://194.67.105.254/order/update/6/

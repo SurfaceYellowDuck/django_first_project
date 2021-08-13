@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
@@ -6,6 +7,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 
 from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, DeleteView, DetailView, UpdateView
 
 from mainapp.models import Product
@@ -21,6 +23,10 @@ class OrderList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
 
+    @method_decorator(login_required())
+    def dispatch(self, *args, **kwargs):
+        return super(ListView, self).dispatch(*args, **kwargs)
+
 
 class OrderCreate(LoginRequiredMixin, CreateView):
     model = Order
@@ -35,6 +41,7 @@ class OrderCreate(LoginRequiredMixin, CreateView):
         if self.request.POST:
             formset = OrderFormSet(self.request.POST)
         else:
+            # basket_items = Basket.objects.filter(user=self.request.user)
             basket_items = Basket.objects.filter(user=self.request.user)
             if basket_items.exists():
                 OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=basket_items.count())
@@ -68,6 +75,10 @@ class OrderCreate(LoginRequiredMixin, CreateView):
 
         return super(OrderCreate, self).form_valid(form)
 
+    @method_decorator(login_required())
+    def dispatch(self, *args, **kwargs):
+        return super(CreateView, self).dispatch(*args, **kwargs)
+
 
 class OrderUpdate(LoginRequiredMixin, UpdateView):
     model = Order
@@ -82,7 +93,9 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
         if self.request.POST:
             data['orderitems'] = OrderFormSet(self.request.POST, instance=self.object)
         else:
-            formset = OrderFormSet(instance=self.object)
+            queryset = self.object.orderitems.select_related()
+            formset = OrderFormSet(instance=self.object, queryset=queryset)
+            # formset = OrderFormSet(instance=self.object)
             for form in formset.forms:
                 if form.instance.pk:
                     form.initial['price'] = form.instance.product.price
@@ -109,6 +122,10 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
 
         return super(OrderUpdate, self).form_valid(form)
 
+    @method_decorator(login_required())
+    def dispatch(self, *args, **kwargs):
+        return super(UpdateView, self).dispatch(*args, **kwargs)
+
 
 class OrderDelete(DeleteView):
    model = Order
@@ -124,6 +141,9 @@ class OrderRead(DetailView):
        context['title'] = 'заказ/просмотр'
        return context
 
+   @method_decorator(login_required())
+   def dispatch(self, *args, **kwargs):
+       return super(DetailView, self).dispatch(*args, **kwargs)
 
 def order_forming_complete(request, pk):
    order = get_object_or_404(Order, pk=pk)
