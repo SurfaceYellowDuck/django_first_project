@@ -2,7 +2,7 @@ from django.urls import path
 from .views import products, product
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.views.decorators.cache import cache_page
 
 app_name = 'products'
 

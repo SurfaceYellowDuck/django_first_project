@@ -13,13 +13,14 @@ from django.views.generic import ListView, CreateView, DeleteView, DetailView, U
 from mainapp.models import Product
 from .models import Order, OrderItem
 from basketapp.models import Basket
-from .forms import OrderForm, OrderItemForm
+from .forms import OrderItemForm
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class OrderList(LoginRequiredMixin, ListView):
     model = Order
+
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
 
@@ -100,7 +101,7 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
                 if form.instance.pk:
                     form.initial['price'] = form.instance.product.price
             # if self.object.status == "PD":
-                 # basket_items.delete()
+            # basket_items.delete()
             data['orderitems'] = formset
 
         return data
@@ -128,29 +129,30 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
 
 
 class OrderDelete(DeleteView):
-   model = Order
-   success_url = reverse_lazy('ordersapp:orders_list')
+    model = Order
+    success_url = reverse_lazy('ordersapp:orders_list')
 
 
 class OrderRead(DetailView):
-   model = Order
-   template_name = 'ordersapp/order_detail.html'
+    model = Order
+    template_name = 'ordersapp/order_detail.html'
 
-   def get_context_data(self, **kwargs):
-       context = super(OrderRead, self).get_context_data(**kwargs)
-       context['title'] = 'заказ/просмотр'
-       return context
+    def get_context_data(self, **kwargs):
+        context = super(OrderRead, self).get_context_data(**kwargs)
+        context['title'] = 'заказ/просмотр'
+        return context
 
-   @method_decorator(login_required())
-   def dispatch(self, *args, **kwargs):
-       return super(DetailView, self).dispatch(*args, **kwargs)
+    @method_decorator(login_required())
+    def dispatch(self, *args, **kwargs):
+        return super(DetailView, self).dispatch(*args, **kwargs)
+
 
 def order_forming_complete(request, pk):
-   order = get_object_or_404(Order, pk=pk)
-   order.status = Order.SENT_TO_PROCEED
-   order.save()
+    order = get_object_or_404(Order, pk=pk)
+    order.status = Order.SENT_TO_PROCEED
+    order.save()
 
-   return HttpResponseRedirect(reverse('ordersapp:orders_list'))
+    return HttpResponseRedirect(reverse('ordersapp:orders_list'))
 
 
 @receiver(pre_save, sender=OrderItem)
@@ -182,4 +184,5 @@ def get_product_price(request, pk):
         product = Product.objects.filter(pk=int(pk)).first()
         if product:
             return JsonResponse({'price': product.price})
-        else: return JsonResponse({'price': 0})
+        else:
+            return JsonResponse({'price': 0})

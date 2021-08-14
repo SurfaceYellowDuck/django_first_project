@@ -75,6 +75,7 @@ class UserLoginView(LoginView):
             self.form_invalid(form)
             return HttpResponseRedirect(reverse('index'))
 
+
 # def login(request):
 #     title = 'вход'
 #
@@ -86,13 +87,13 @@ class UserLoginView(LoginView):
 #         username = request.POST['username']
 #         password = request.POST['password']
 #
-        # user = auth.authenticate(username=username, password=password)
-        # if user and user.is_active:
-        #     auth.login(request, user)
-        #     if 'next' in request.POST.keys():
-        #         return HttpResponseRedirect(request.POST['next'])
-        #     else:
-        #         return HttpResponseRedirect(reverse('index'))
+# user = auth.authenticate(username=username, password=password)
+# if user and user.is_active:
+#     auth.login(request, user)
+#     if 'next' in request.POST.keys():
+#         return HttpResponseRedirect(request.POST['next'])
+#     else:
+#         return HttpResponseRedirect(reverse('index'))
 #
 #     context = {
 #         'title': title,
@@ -135,6 +136,7 @@ class UserRegistrationView(CreateView):
             print('ошибка отправки сообщения')
             return HttpResponseRedirect(reverse('auth:login'))
 
+
 # def register(request):
 #     title = 'регистрация'
 #
@@ -160,31 +162,31 @@ class UserRegistrationView(CreateView):
 # class UserEditView(UpdateView):
 #     model = ShopUser
 #     template_name = 'authapp/edit.html'
-    # success_url = reverse_lazy('index')
+# success_url = reverse_lazy('index')
 
-    # def get_full_form(self):
-    #     form_class_1 = formset_factory(ShopUserEditForm)
-    #     form_class_2 = formset_factory(ShopUserProfileEditForm)
-    #     full_form = []
-    #     for el in form_class_2():
-    #         full_form.append(el.as_table())
-    #     for el in form_class_1():
-    #         full_form.append(el.as_table())
-    #     for el in full_form:
-    #         return full_form
+# def get_full_form(self):
+#     form_class_1 = formset_factory(ShopUserEditForm)
+#     form_class_2 = formset_factory(ShopUserProfileEditForm)
+#     full_form = []
+#     for el in form_class_2():
+#         full_form.append(el.as_table())
+#     for el in form_class_1():
+#         full_form.append(el.as_table())
+#     for el in full_form:
+#         return full_form
 
-    # form_class = get_full_form()
-    # fields = ('username', 'first_name', 'last_name', 'email', 'age')
+# form_class = get_full_form()
+# fields = ('username', 'first_name', 'last_name', 'email', 'age')
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['form_class'] = self.get_full_form()
-    #     context['title'] = 'пользователи/редактирование'
-    #     context['fields'] = '__all__'
-    #     return context
-    #
-    # def get_success_url(self):
-    #     return reverse_lazy('authapp:edit', args=[self.request.user.pk])
+# def get_context_data(self, **kwargs):
+#     context = super().get_context_data(**kwargs)
+#     context['form_class'] = self.get_full_form()
+#     context['title'] = 'пользователи/редактирование'
+#     context['fields'] = '__all__'
+#     return context
+#
+# def get_success_url(self):
+#     return reverse_lazy('authapp:edit', args=[self.request.user.pk])
 @login_required
 @transaction.atomic
 def edit(request):

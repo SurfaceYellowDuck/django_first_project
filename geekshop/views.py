@@ -18,7 +18,8 @@ class IndexView(ListView):
     model = Product
     template_name = 'geekshop/index.html'
 
-    queryset_products = Product.objects.filter(is_deleted=True, category__is_deleted=False).select_related('category')[:3]
+    queryset_products = Product.objects.filter(is_deleted=True, category__is_deleted=False).select_related('category')[
+                        :3]
 
     # queryset_basket = ''
     # @method_decorator(login_required())
@@ -32,12 +33,11 @@ class IndexView(ListView):
 
     extra_context = {'title': 'shop', 'products': queryset_products}
 
-
-
     # def get(self, request, *args, **kwargs):
     #     self.object_list = self.get_queryset()
     #     context = self.get_context_data()
     #     return self.render_to_response(context)
+
 
 # def index(request):
 #     basket = []
