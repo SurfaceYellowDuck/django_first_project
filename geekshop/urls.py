@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import IndexView, ContactsView
 from django.conf import settings
+from django.conf.urls.static import static
 
 
 
@@ -35,8 +36,10 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+
    import debug_toolbar
 
+   urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
    urlpatterns += [path('debug/', include(debug_toolbar.urls))]
 
 

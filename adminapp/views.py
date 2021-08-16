@@ -154,7 +154,7 @@ class ProductCreateView(CreateView):
 
     success_url = reverse_lazy('admin_staff:products')
 
-    def get_context_data(self,  **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(ProductCreateView, self).get_context_data()
         context['title'] = 'продукты/создать'
         context['fields'] = '__all__'
@@ -177,7 +177,7 @@ class ProductUpdateView(UpdateView):
 
     success_url = reverse_lazy('admin_staff:products')
 
-    def get_context_data(self,  **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(ProductUpdateView, self).get_context_data()
         context['title'] = 'продукты/редактировать'
         context['fields'] = '__all__'
@@ -206,6 +206,7 @@ class OrdersView(ListView):
     model = Order
     # fields = ('status',)
     template_name = 'adminapp/order_list.html'
+
     def get_queryset(self):
         return Order.objects.all()
 
@@ -275,7 +276,7 @@ class AdminOrderUpdate(LoginRequiredMixin, UpdateView):
                 if form.instance.pk:
                     form.initial['price'] = form.instance.product.price
             # if self.object.status == "PD":
-                 # basket_items.delete()
+            # basket_items.delete()
             data['orderitems'] = formset
 
         return data

@@ -1,9 +1,7 @@
 from django.db import models
 
 
-
 class ProductCategory(models.Model):
-
     name = models.CharField(verbose_name='название категории', unique=True, max_length=128)
     description = models.CharField(verbose_name='описание категории', blank=True, max_length=2048)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -33,4 +31,3 @@ class Product(models.Model):
 
     # def get_absolute_url(self):
     #     return reverse('admin_staff:products', args=[self.pk])
-
