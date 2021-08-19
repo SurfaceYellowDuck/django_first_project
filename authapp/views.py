@@ -12,6 +12,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import CreateView
 
 
+
 # from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -73,7 +74,7 @@ class UserLoginView(LoginView):
                 return HttpResponseRedirect(reverse('index'))
         else:
             self.form_invalid(form)
-            return HttpResponseRedirect(reverse('index'))
+            return HttpResponseRedirect(reverse('auth:login'))
 
 
 # def login(request):

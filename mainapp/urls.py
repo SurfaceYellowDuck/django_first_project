@@ -11,7 +11,7 @@ urlpatterns = [
     path('category/<int:pk>/', products, name='category'),
     path('category/<int:pk>/page/<int:page>/', products, name='page'),
     path('product/<int:pk>/', product, name='product'),
-    path('category/<int:pk>/page/<int:page>/ajax/', cache_page(3600)(products_ajax)),
+    path('category/<int:pk>/page/<int:page>/ajax/$', cache_page(3600)(products_ajax)),
 ]
 
 if settings.DEBUG:

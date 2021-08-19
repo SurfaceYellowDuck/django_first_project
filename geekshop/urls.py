@@ -27,7 +27,7 @@ urlpatterns = [
     path('', IndexView.as_view(), name="index"),
     path('contacts/', ContactsView.as_view(), name="contacts"),
     path('products/', include('mainapp.urls', namespace='products')),
-    path('auth/', include('authapp.urls', namespace='auth')),
+    path('auth/', include('authapp.urls', namespace='auth'), name='auth'),
     # path('test/', include('mainapp.urls', namespace='test')),
     path('basket/', include('basketapp.urls', namespace='basket')),
     path('order/', include('ordersapp.urls', namespace='order')),

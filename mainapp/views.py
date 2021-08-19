@@ -10,6 +10,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from django.core.cache import cache
 
+
 def get_links_menu():
     if settings.LOW_CACHE:
         key = 'links_menu'
@@ -20,6 +21,7 @@ def get_links_menu():
         return links_menu
     else:
         return ProductCategory.objects.filter(is_deleted=False)
+
 
 def get_category(pk):
     if settings.LOW_CACHE:
@@ -39,6 +41,7 @@ def get_basket(user):
     else:
         return []
 
+
 def get_products():
     if settings.LOW_CACHE:
         key = 'products'
@@ -49,6 +52,7 @@ def get_products():
         return products
     else:
         return Product.objects.filter(is_deleted=False, category__is_deleted=False).select_related('category')
+
 
 def get_product(pk):
     if settings.LOW_CACHE:
@@ -61,10 +65,11 @@ def get_product(pk):
     else:
         return get_object_or_404(Product, pk=pk)
 
+
 def get_hot_product():
     products = get_products()
-
-    return random.sample(list(products), 1)[0]
+    if products:
+        return random.sample(list(products), 1)[0]
 
 
 def get_products_orederd_by_price():
@@ -84,65 +89,70 @@ def get_products_in_category_ordered_by_price(pk):
         key = f'products_in_category_orederd_by_price_{pk}'
         products = cache.get(key)
         if products is None:
-            products = Product.objects.filter(category__pk=pk, is_deleted=False, category__is_deleted=False).order_by('price')
+            products = Product.objects.filter(category__pk=pk, is_deleted=False, category__is_deleted=False).order_by(
+                'price')
             cache.set(key, products)
         return products
     else:
         return Product.objects.filter(category__pk=pk, is_deleted=False, category__is_deleted=False).order_by('price')
 
-def get_same_products(hot_product):
-    same_products = Product.objects.filter(category=hot_product.category).exclude(pk=hot_product.pk)
 
-    return same_products
+def get_same_products(hot_product):
+    if hot_product is not None:
+        same_products = Product.objects.filter(category=hot_product.category).exclude(pk=hot_product.pk)
+
+        return same_products
 
 
 def products(request, pk=None, page=1):
-    title = 'продукты/каталог'
+    if len(Product.objects.all()) != 0:
 
-    hot_product = get_hot_product()
-    same_products = get_same_products(hot_product)
+        title = 'продукты/каталог'
 
-    links_menu = get_links_menu()
-    products =  get_products_orederd_by_price()
+        hot_product = get_hot_product()
+        same_products = get_same_products(hot_product)
 
-    if pk is not None:
-        if pk == 0:
-            products = products
-            category = {'pk': 0, 'name': 'все'}
-        else:
-            category = get_category(pk)
-            products = get_products_in_category_ordered_by_price(pk)
+        links_menu = get_links_menu()
+        products = get_products_orederd_by_price()
 
-        paginator = Paginator(products, 2)
+        if pk is not None:
+            if pk == 0:
+                products = products
+                category = {'pk': 0, 'name': 'все'}
+            else:
+                category = get_category(pk)
+                products = get_products_in_category_ordered_by_price(pk)
 
-        try:
-            products_paginator = paginator.page(page)
-        except PageNotAnInteger:
-            products_paginator = paginator.page(1)
-        except EmptyPage:
-            products_paginator = paginator.page(paginator.num_pages)
+            paginator = Paginator(products, 2)
+
+            try:
+                products_paginator = paginator.page(page)
+            except PageNotAnInteger:
+                products_paginator = paginator.page(1)
+            except EmptyPage:
+                products_paginator = paginator.page(paginator.num_pages)
+
+            context = {
+                'title': title,
+                'links_menu': links_menu,
+                'hot_product': hot_product,
+                'same_products': same_products,
+                'products': products_paginator,
+                'category': category,
+            }
+            return render(request=request, template_name='mainapp/products.html', context=context)
 
         context = {
             'title': title,
             'links_menu': links_menu,
             'hot_product': hot_product,
             'same_products': same_products,
-            'products': products_paginator,
-            'category': category,
+            'products': products,
         }
+
         return render(request=request, template_name='mainapp/products.html', context=context)
-
-
-    context = {
-        'title': title,
-        'links_menu': links_menu,
-        'hot_product': hot_product,
-        'same_products': same_products,
-        'products': products,
-    }
-
-    return render(request=request, template_name='mainapp/products.html', context=context)
-
+    else:
+        return render(request=request, template_name='mainapp/products_is_empty.html')
 
 def product(request, pk):
     title = 'продукты'
@@ -158,38 +168,37 @@ def product(request, pk):
 
 
 def products_ajax(request, pk=None, page=1):
-   if request.is_ajax():
-       links_menu = get_links_menu()
+    if request.is_ajax():
+        links_menu = get_links_menu()
 
-       if pk:
-           if pk == '0':
-               category = {
-                   'pk': 0,
-                   'name': 'все'
-               }
-               products = get_products_orederd_by_price()
-           else:
-               category = get_category(pk)
-               products = get_products_in_category_ordered_by_price(pk)
+        if pk:
+            if pk == '0':
+                category = {
+                    'pk': 0,
+                    'name': 'все'
+                }
+                products = get_products_orederd_by_price()
+            else:
+                category = get_category(pk)
+                products = get_products_in_category_ordered_by_price(pk)
 
-           paginator = Paginator(products, 2)
-           try:
-               products_paginator = paginator.page(page)
-           except PageNotAnInteger:
-               products_paginator = paginator.page(1)
-           except EmptyPage:
-               products_paginator = paginator.page(paginator.num_pages)
+            paginator = Paginator(products, 2)
+            try:
+                products_paginator = paginator.page(page)
+            except PageNotAnInteger:
+                products_paginator = paginator.page(1)
+            except EmptyPage:
+                products_paginator = paginator.page(paginator.num_pages)
 
-           content = {
-               'links_menu': links_menu,
-               'category': category,
-               'products': products_paginator,
-           }
+            content = {
+                'links_menu': links_menu,
+                'category': category,
+                'products': products_paginator,
+            }
 
-           result = render_to_string(
-                        'mainapp/includes/inc_products_list_content.html',
-                        context=content,
-                        request=request)
+            result = render_to_string(
+                'mainapp/includes/inc_products_list_content.html',
+                context=content,
+                request=request)
 
-           return JsonResponse({'result': result})
-
+            return JsonResponse({'result': result})
