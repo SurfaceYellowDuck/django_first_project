@@ -12,6 +12,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import CreateView
 
 
+
 # from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -38,12 +39,14 @@ def send_verify_email(user):
 
 
 def verify(request, email, activation_key):
+    print(email)
     try:
         user = ShopUser.objects.get(email=email)
+        print(user)
         if user.activation_key == activation_key and not user.is_activation_key_expired():
             user.is_active = True
             user.save()
-            auth.login(request, user)
+            auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return render(request, 'authapp/verification.html')
         else:
             print(f'error activation user {user.username}')
@@ -73,7 +76,7 @@ class UserLoginView(LoginView):
                 return HttpResponseRedirect(reverse('index'))
         else:
             self.form_invalid(form)
-            return HttpResponseRedirect(reverse('index'))
+            return HttpResponseRedirect(reverse('auth:login'))
 
 
 # def login(request):
@@ -111,30 +114,29 @@ class UserLogoutView(LogoutView):
 #     auth.logout(request)
 #     return HttpResponseRedirect(reverse('index'))
 
-class UserRegistrationView(CreateView):
-    model = ShopUser
-    form_class = ShopUserRegisterForm
-    template_name = "authapp/register.html"
-    success_url = reverse_lazy('index')
+def register(request):
+    title = 'регистрация'
 
-    def get_context_data(self, **kwargs):
-        context = super(UserRegistrationView, self).get_context_data()
-        context['title'] = 'пользователи/создать'
-        context['fields'] = '__all__'
+    if request.method == 'POST':
+        register_form = ShopUserRegisterForm(request.POST, request.FILES)
 
-        return context
+        if register_form.is_valid():
+            user = register_form.save()
+            if send_verify_email(user):
+                print('Сообщение отправлено.')
+                return HttpResponseRedirect(reverse('auth:login'))
+            else:
+                print('Неудлаось отправить сообщение.')
+                return HttpResponseRedirect(reverse('auth:login'))
+    else:
+        register_form = ShopUserRegisterForm()
 
-    def get_form_class(self):
-        return self.form_class
+    context = {
+        'title': title,
+        'register_form': register_form
+    }
 
-    def post(self, request, *args, **kwargs):
-        user = self.get_form().save()
-        if send_verify_email(user):
-            print('сообщение подтверждения отправлено')
-            return HttpResponseRedirect(reverse('auth:login'))
-        else:
-            print('ошибка отправки сообщения')
-            return HttpResponseRedirect(reverse('auth:login'))
+    return render(request, 'authapp/register.html', context)
 
 
 # def register(request):

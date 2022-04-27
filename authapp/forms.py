@@ -2,6 +2,7 @@ import hashlib
 import random
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
+
 from django.core.files.images import get_image_dimensions
 from .models import ShopUser, ShopUserProfile
 

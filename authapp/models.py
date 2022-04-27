@@ -9,7 +9,8 @@ from django.db.models.signals import post_save
 class ShopUser(AbstractUser):
     avatar = models.ImageField(
         upload_to='users_avatars',
-        blank=True
+        blank=True,
+        # default='django_first_project/media/products_images/default_profile.jpg'
     )
     age = models.PositiveIntegerField(
         verbose_name='возраст',

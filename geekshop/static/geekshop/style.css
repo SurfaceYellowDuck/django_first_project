@@ -924,7 +924,7 @@ td:first-child {
 	background-color: #fff;
     opacity: 0.7;
     position: absolute;
-    top: 0;    
+    top: 0;
 }
 .slider-control a:hover .text {
 	display: block;

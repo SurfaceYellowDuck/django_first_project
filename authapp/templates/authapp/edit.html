@@ -3,10 +3,17 @@
 
 
 {% block content %}
+    <div class="h2 text-center head">
+        Редактировать профиль
+    </div>
     <div class="col-4 mx-auto">
         <div class="row">
             <div class="user_avatar">
-                <img src="/media/{{ user.avatar }}" class="rounded-circle">
+                {% if user.avatar %}
+                    <img src="/media/{{ user.avatar }}" class="rounded-circle" alt="">
+                {% else %}
+                    <img src="/media/products_images/default_profile.jpg" class="rounded-circle" alt="">
+                {% endif %}
             </div>
         </div>
     <div class="row">

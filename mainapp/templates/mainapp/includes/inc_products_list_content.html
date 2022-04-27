@@ -3,6 +3,7 @@
 
 <div class="products_list">
   <div class="details-products">
+<!--      {% if hot_product %}-->
     <div class="details-slider">
         <div class="slider-product text-center">
             <img src="/media/{{ hot_product.image }}">
@@ -37,12 +38,14 @@
             {{ hot_product.description }}
         </div>
     </div>
+<!--      {% endif %}-->
 </div>
 {% if products %}
     <div class="featured mt-5">
         {% if category %}
             <h2>Категория: {{ category.name|title }}</h2>
         {% endif %}
+        {% if category %}
         <div class="paginator">
             {% if products.has_previous %}
                 <a href="{% url 'products:page' category.pk products.previous_page_number %}">
@@ -59,6 +62,7 @@
                 </a>
             {% endif %}
         </div>
+        {% endif %}
         <div class="featured-menu">
             <a class="active" href="#">Популярные</a><a href="#">Новинки</a>
         </div>

@@ -40,7 +40,6 @@ class AdminOrderForm(forms.ModelForm):
         model = Order
         exclude = ('user',)
 
-
     def __init__(self, *args, **kwargs):
         super(AdminOrderForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
@@ -49,6 +48,7 @@ class AdminOrderForm(forms.ModelForm):
 
 class AdminOrderItemEditForm(forms.ModelForm):
     price = forms.CharField(label='цена', required=False)
+
     class Meta:
         model = OrderItem
         exclude = ()
@@ -57,3 +57,11 @@ class AdminOrderItemEditForm(forms.ModelForm):
         super(AdminOrderItemEditForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+
+
+class ProductCategoryEditForm(forms.ModelForm):
+    discount = forms.IntegerField(label='скидка', required=False, min_value=0, max_value=90, initial=0)
+
+    class Meta:
+        model = ProductCategory
+        exclude = ()

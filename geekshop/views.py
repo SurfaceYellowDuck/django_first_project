@@ -18,7 +18,7 @@ class IndexView(ListView):
     model = Product
     template_name = 'geekshop/index.html'
 
-    queryset_products = Product.objects.filter(is_deleted=True, category__is_deleted=False).select_related('category')[
+    queryset_products = Product.objects.filter(is_deleted=False, category__is_deleted=False).select_related('category')[
                         :3]
 
     # queryset_basket = ''

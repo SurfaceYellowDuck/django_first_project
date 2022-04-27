@@ -1,2 +1,2 @@
-C:\Learning_Django\learn_django_beginner\geekshop\venv\Scripts\activate.bat && python manage.py runserver
+G:\Programming_projects\django_first_project\venv\Scripts\activate.bat && python manage.py runserver
 pause

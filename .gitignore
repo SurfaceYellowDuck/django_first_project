@@ -134,3 +134,11 @@ geekshop/vk.json
 ordersapp/migrations/
 
 authapp/migrations/
+
+migrate.bat
+
+run.bat
+
+ОЧЕНЬ ВАЖНО
+
+*.bat
